@@ -27,7 +27,7 @@ type Devices struct {
 	Results  []Device `json:"results"`
 }
 
-func (c *Client) GetDevices() (*[]Device, error) {
+func (c *Client) GetDevices() ([]Device, error) {
 	url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device/pageSize=100", c.BaseURL, c.Domain)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	req, err := http.NewRequest("GET", url, nil)
@@ -53,5 +53,5 @@ func (c *Client) GetDevices() (*[]Device, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &data.Results, nil
+	return data.Results, nil
 }
