@@ -28,7 +28,7 @@ type Devices struct {
 }
 
 func (c *Client) GetDevices() ([]Device, error) {
-	url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device/pageSize=100", c.BaseURL, c.Domain)
+	url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device?pageSize=100", c.BaseURL, c.Domain)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
