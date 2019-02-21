@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 )
 
 type Device struct {
@@ -135,7 +136,7 @@ func (c *Client) GetDevices() ([]Device, error) {
 	page := 0
 	for {
 		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device?pageSize=1&page=%d", c.BaseURL, c.Domain, page)
+		url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device?pageSize=100&page=%d", c.BaseURL, c.Domain, page)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return nil, err
@@ -164,7 +165,50 @@ func (c *Client) GetDevices() ([]Device, error) {
 		}
 		devices = append(devices, data.Results...)
 		page++
-		fmt.Printf("Got %d devices from page %d. Total is now %d.", data.Count, page+1, len(devices))
+	}
+
+	return devices, nil
+}
+
+func (c *Client) GetDevicesByName(pattern string) ([]Device, error) {
+	var devices []Device
+	page := 0
+	for {
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device?pageSize=100&page=%d", c.BaseURL, c.Domain, page)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.SetBasicAuth(c.Username, c.Password)
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		if 200 != resp.StatusCode {
+			return nil, fmt.Errorf("%s", body)
+		}
+		var data Devices
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			return nil, err
+		}
+		if data.Count == 0 {
+			break
+		}
+		for _, device := range devices {
+			match, _ := regexp.MatchString(pattern, device.Name)
+			if match {
+				devices = append(devices, device)
+			}
+		}
+		page++
 	}
 
 	return devices, nil
