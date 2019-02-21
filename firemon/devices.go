@@ -175,6 +175,7 @@ func (c *Client) UpdateDevice(device Device) error {
 		return err
 	}
 	req.SetBasicAuth(c.Username, c.Password)
+	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
