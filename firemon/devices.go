@@ -21,7 +21,7 @@ type Device struct {
 	SyslogMatchName      string        `json:"syslogMatchName,omitempty"`
 	SecurityConcernIndex float64       `json:"securityConcernIndex"`
 	Licenses             []string      `json:"licenses"`
-	DevicePack           struct {
+	DevicePack           *struct {
 		Type       string `json:"type"`
 		ID         int    `json:"id"`
 		ArtifactID string `json:"artifactId"`
@@ -89,7 +89,7 @@ type Device struct {
 	GpcComputeDate       string `json:"gpcComputeDate"`
 	GpcImplementDate     string `json:"gpcImplementDate"`
 	State                string `json:"state"`
-	ExtendedSettingsJSON struct {
+	ExtendedSettingsJSON *struct {
 		SSHPort                       int    `json:"sshPort"`
 		Password                      string `json:"password"`
 		RestPort                      int    `json:"restPort"`
@@ -112,7 +112,7 @@ type Device struct {
 		ScheduledRetrievalInterval    int    `json:"scheduledRetrievalInterval"`
 		SkipDynamicBlockListRetrieval bool   `json:"skipDynamicBlockListRetrieval"`
 	} `json:"extendedSettingsJson"`
-	Cluster struct {
+	Cluster *struct {
 		ID             int    `json:"id"`
 		DomainID       int    `json:"domainId"`
 		Name           string `json:"name"`
