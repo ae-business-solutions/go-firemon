@@ -165,7 +165,8 @@ func (c *Client) GetDevices() ([]Device, error) {
 func (c *Client) UpdateDevice(device Device) error {
 	url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device/%d", c.BaseURL, c.Domain, device.ID)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	body, err := json.Marshal(device)
+	// Using custom version of json.Marshal that does NOT escape HTML symbols (<>&)
+	body, err := JSONMarshal(device)
 	if err != nil {
 		return err
 	}
@@ -180,7 +181,7 @@ func (c *Client) UpdateDevice(device Device) error {
 		return err
 	}
 	resp.Body.Close()
-	if 200 != resp.StatusCode {
+	if 204 != resp.StatusCode {
 		return fmt.Errorf("%s", body)
 	}
 	return nil
