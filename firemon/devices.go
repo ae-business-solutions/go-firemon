@@ -163,7 +163,7 @@ func (c *Client) GetDevices() ([]Device, error) {
 }
 
 func (c *Client) UpdateDevice(device Device) error {
-	url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device/%d", c.BaseURL, device.ID)
+	url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device/%d", c.BaseURL, c.Domain, device.ID)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	body, err := json.Marshal(device)
 	if err != nil {
