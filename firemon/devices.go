@@ -90,26 +90,26 @@ type Device struct {
 	GpcImplementDate     string `json:"gpcImplementDate"`
 	State                string `json:"state"`
 	ExtendedSettingsJSON *struct {
-		SSHPort                       int    `json:"sshPort"`
-		Password                      string `json:"password"`
-		RestPort                      int    `json:"restPort"`
-		Username                      string `json:"username"`
+		SSHPort                       int    `json:"sshPort,omitempty"`
+		Password                      string `json:"password,omitempty"`
+		RestPort                      int    `json:"restPort,omitempty"`
+		Username                      string `json:"username,omitempty"`
 		Connected                     bool   `json:"connected"`
 		SupportsFQDN                  bool   `json:"supportsFQDN"`
-		LoggingPlugin                 string `json:"loggingPlugin"`
-		RetrievalMethod               string `json:"retrievalMethod"`
-		RetrievalPlugin               string `json:"retrievalPlugin"`
-		MonitoringPlugin              string `json:"monitoringPlugin"`
+		LoggingPlugin                 string `json:"loggingPlugin,omitempty"`
+		RetrievalMethod               string `json:"retrievalMethod,omitempty"`
+		RetrievalPlugin               string `json:"retrievalPlugin,omitempty"`
+		MonitoringPlugin              string `json:"monitoringPlugin,omitempty"`
 		ResetSSHKeyValue              bool   `json:"resetSSHKeyValue"`
-		LogUpdateInterval             int    `json:"logUpdateInterval"`
+		LogUpdateInterval             int    `json:"logUpdateInterval,omitempty"`
 		BatchConfigRetrieval          bool   `json:"batchConfigRetrieval"`
 		LogMonitoringEnabled          bool   `json:"logMonitoringEnabled"`
-		LogRecordCacheTimeout         int    `json:"logRecordCacheTimeout"`
+		LogRecordCacheTimeout         int    `json:"logRecordCacheTimeout,omitempty"`
 		SkipUserFileRetrieval         bool   `json:"skipUserFileRetrieval"`
 		ChangeMonitoringEnabled       bool   `json:"changeMonitoringEnabled"`
 		SuppressFQDNCapabilities      bool   `json:"suppressFQDNCapabilities"`
 		ScheduledRetrievalEnabled     bool   `json:"scheduledRetrievalEnabled"`
-		ScheduledRetrievalInterval    int    `json:"scheduledRetrievalInterval"`
+		ScheduledRetrievalInterval    int    `json:"scheduledRetrievalInterval,omitempty"`
 		SkipDynamicBlockListRetrieval bool   `json:"skipDynamicBlockListRetrieval"`
 	} `json:"extendedSettingsJson"`
 	Cluster *struct {
