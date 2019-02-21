@@ -202,7 +202,7 @@ func (c *Client) GetDevicesByName(pattern string) ([]Device, error) {
 		if data.Count == 0 {
 			break
 		}
-		for _, device := range devices {
+		for _, device := range data.Results {
 			match, _ := regexp.MatchString(pattern, device.Name)
 			if match {
 				devices = append(devices, device)
