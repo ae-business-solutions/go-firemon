@@ -131,35 +131,42 @@ type Devices struct {
 }
 
 func (c *Client) GetDevices() ([]Device, error) {
-	url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device?pageSize=100", c.BaseURL, c.Domain)
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.SetBasicAuth(c.Username, c.Password)
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if 200 != resp.StatusCode {
-		return nil, fmt.Errorf("%s", body)
+	var devices []Device
+	page := 0
+	for {
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device?pageSize=1&page=%d", c.BaseURL, c.Domain, page)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.SetBasicAuth(c.Username, c.Password)
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		if 200 != resp.StatusCode {
+			return nil, fmt.Errorf("%s", body)
+		}
+		var data Devices
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			return nil, err
+		}
+		if data.Count == 0 {
+			break
+		}
+		devices = append(devices, data.Results...)
+		page++
 	}
 
-	// Extract JSON
-	var data Devices
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		return nil, err
-	}
-
-	return data.Results, nil
+	return devices, nil
 }
 
 func (c *Client) UpdateDevice(device Device) error {
