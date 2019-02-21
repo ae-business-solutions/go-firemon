@@ -164,6 +164,7 @@ func (c *Client) GetDevices() ([]Device, error) {
 		}
 		devices = append(devices, data.Results...)
 		page++
+		fmt.Printf("Got %d devices from page %d. Total is now %d.", data.Count, page+1, len(devices))
 	}
 
 	return devices, nil
