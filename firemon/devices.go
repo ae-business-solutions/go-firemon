@@ -1,6 +1,7 @@
 package firemon
 
 import (
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -9,14 +10,116 @@ import (
 )
 
 type Device struct {
-	ID                   int      `json:"id"`
-	DomainID             int      `json:"domainId"`
-	Name                 string   `json:"name"`
-	ManagementIP         string   `json:"managementIp"`
-	DataCollectorID      int      `json:"dataCollectorId"`
-	SecurityConcernIndex float64  `json:"securityConcernIndex"`
-	Licenses             []string `json:"licenses"`
-	State                string   `json:"state"`
+	ID                   int           `json:"id"`
+	DomainID             int           `json:"domainId"`
+	Name                 string        `json:"name"`
+	ManagementIP         string        `json:"managementIp"`
+	Parents              []interface{} `json:"parents"`
+	Children             []interface{} `json:"children"`
+	DataCollectorID      int           `json:"dataCollectorId"`
+	CentralSyslogID      int           `json:"centralSyslogId,omitempty"`
+	SyslogMatchName      string        `json:"syslogMatchName,omitempty"`
+	SecurityConcernIndex float64       `json:"securityConcernIndex"`
+	Licenses             []string      `json:"licenses"`
+	DevicePack           struct {
+		Type       string `json:"type"`
+		ID         int    `json:"id"`
+		ArtifactID string `json:"artifactId"`
+		GroupID    string `json:"groupId"`
+		Version    string `json:"version"`
+		Artifacts  []struct {
+			Name     string `json:"name"`
+			Checksum string `json:"checksum"`
+		} `json:"artifacts"`
+		DeviceName       string `json:"deviceName"`
+		DeviceType       string `json:"deviceType"`
+		Vendor           string `json:"vendor"`
+		CollectionConfig struct {
+			ID                   int    `json:"id"`
+			Name                 string `json:"name"`
+			DevicePackID         int    `json:"devicePackId"`
+			DevicePackVendor     string `json:"devicePackVendor"`
+			DevicePackDeviceType string `json:"devicePackDeviceType"`
+			DevicePackDeviceName string `json:"devicePackDeviceName"`
+			DevicePackGroupID    string `json:"devicePackGroupId"`
+			DevicePackArtifactID string `json:"devicePackArtifactId"`
+			ChangePattern        string `json:"changePattern"`
+			ChangeCriterion      []struct {
+				Pattern         string `json:"pattern"`
+				TimeoutSeconds  int    `json:"timeoutSeconds"`
+				ContinueMatch   bool   `json:"continueMatch"`
+				ParentUserName  string `json:"parentUserName"`
+				RetrieveOnMatch bool   `json:"retrieveOnMatch"`
+			} `json:"changeCriterion"`
+			UsagePattern   string `json:"usagePattern"`
+			UsageCriterion []struct {
+				Pattern       string        `json:"pattern"`
+				Fields        []interface{} `json:"fields"`
+				DynamicFields []interface{} `json:"dynamicFields"`
+			} `json:"usageCriterion"`
+			CreatedDate            string   `json:"createdDate"`
+			LastModifiedDate       string   `json:"lastModifiedDate"`
+			CreatedBy              string   `json:"createdBy"`
+			LastModifiedBy         string   `json:"lastModifiedBy"`
+			UsageKeys              []string `json:"usageKeys"`
+			ActivatedForDevicePack bool     `json:"activatedForDevicePack"`
+		} `json:"collectionConfig"`
+		BehaviorTranslator      string        `json:"behaviorTranslator"`
+		Normalization           bool          `json:"normalization"`
+		Usage                   bool          `json:"usage"`
+		Change                  bool          `json:"change"`
+		UsageSyslog             bool          `json:"usageSyslog"`
+		ChangeSyslog            bool          `json:"changeSyslog"`
+		Active                  bool          `json:"active"`
+		SupportsDiff            bool          `json:"supportsDiff"`
+		SupportsManualRetrieval bool          `json:"supportsManualRetrieval"`
+		ImplicitDrop            bool          `json:"implicitDrop"`
+		DiffDynamicRoutes       bool          `json:"diffDynamicRoutes"`
+		Automation              bool          `json:"automation"`
+		LookupNoIntfRoutes      bool          `json:"lookupNoIntfRoutes"`
+		AutomationCli           bool          `json:"automationCli"`
+		SSH                     bool          `json:"ssh"`
+		SharedNetworks          bool          `json:"sharedNetworks"`
+		SharedServices          bool          `json:"sharedServices"`
+		SupportedTypes          []string      `json:"supportedTypes"`
+		DiffIgnorePatterns      []string      `json:"diffIgnorePatterns"`
+		ConvertableTo           []interface{} `json:"convertableTo"`
+	} `json:"devicePack"`
+	GpcDirtyDate         string `json:"gpcDirtyDate"`
+	GpcComputeDate       string `json:"gpcComputeDate"`
+	GpcImplementDate     string `json:"gpcImplementDate"`
+	State                string `json:"state"`
+	ExtendedSettingsJSON struct {
+		SSHPort                       int    `json:"sshPort"`
+		Password                      string `json:"password"`
+		RestPort                      int    `json:"restPort"`
+		Username                      string `json:"username"`
+		Connected                     bool   `json:"connected"`
+		SupportsFQDN                  bool   `json:"supportsFQDN"`
+		LoggingPlugin                 string `json:"loggingPlugin"`
+		RetrievalMethod               string `json:"retrievalMethod"`
+		RetrievalPlugin               string `json:"retrievalPlugin"`
+		MonitoringPlugin              string `json:"monitoringPlugin"`
+		ResetSSHKeyValue              bool   `json:"resetSSHKeyValue"`
+		LogUpdateInterval             int    `json:"logUpdateInterval"`
+		BatchConfigRetrieval          bool   `json:"batchConfigRetrieval"`
+		LogMonitoringEnabled          bool   `json:"logMonitoringEnabled"`
+		LogRecordCacheTimeout         int    `json:"logRecordCacheTimeout"`
+		SkipUserFileRetrieval         bool   `json:"skipUserFileRetrieval"`
+		ChangeMonitoringEnabled       bool   `json:"changeMonitoringEnabled"`
+		SuppressFQDNCapabilities      bool   `json:"suppressFQDNCapabilities"`
+		ScheduledRetrievalEnabled     bool   `json:"scheduledRetrievalEnabled"`
+		ScheduledRetrievalInterval    int    `json:"scheduledRetrievalInterval"`
+		SkipDynamicBlockListRetrieval bool   `json:"skipDynamicBlockListRetrieval"`
+	} `json:"extendedSettingsJson"`
+	Cluster struct {
+		ID             int    `json:"id"`
+		DomainID       int    `json:"domainId"`
+		Name           string `json:"name"`
+		ActiveDeviceID int    `json:"activeDeviceId"`
+	} `json:"cluster,omitempty"`
+	Editable  bool   `json:"editable"`
+	GpcStatus string `json:"gpcStatus"`
 }
 
 type Devices struct {
@@ -48,10 +151,37 @@ func (c *Client) GetDevices() ([]Device, error) {
 	if 200 != resp.StatusCode {
 		return nil, fmt.Errorf("%s", body)
 	}
+
+	// Extract JSON
 	var data Devices
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		return nil, err
 	}
+
 	return data.Results, nil
+}
+
+func (c *Client) UpdateDevice(device Device) error {
+	url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/device/%d", c.BaseURL, device.ID)
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	body, err := json.Marshal(device)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+	req.SetBasicAuth(c.Username, c.Password)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	resp.Body.Close()
+	if 200 != resp.StatusCode {
+		return fmt.Errorf("%s", body)
+	}
+	return nil
 }
