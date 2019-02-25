@@ -10,15 +10,15 @@ import (
 )
 
 type DeviceGroup struct {
-	ID                   *int   `json:"id,omitempty"`
-	DomainID             int    `json:"domainId"`
-	Name                 string `json:"name"`
-	Description          string `json:"description,omitempty"`
-	ParentID             *int   `json:"parentId,omitempty"`
-	SecurityConcernIndex *float `json:"securityConcernIndex,omitempty"`
-	Analysis             bool   `json:"analysis"`
-	ChildDeviceGroups    *int   `json:"childDeviceGroups,omitempty"`
-	ChildDevices         *int   `json:"childDevices,omitempty"`
+	ID                   *int     `json:"id,omitempty"`
+	DomainID             int      `json:"domainId"`
+	Name                 string   `json:"name"`
+	Description          string   `json:"description,omitempty"`
+	ParentID             *int     `json:"parentId,omitempty"`
+	SecurityConcernIndex *float32 `json:"securityConcernIndex,omitempty"`
+	Analysis             bool     `json:"analysis"`
+	ChildDeviceGroups    *int     `json:"childDeviceGroups,omitempty"`
+	ChildDevices         *int     `json:"childDevices,omitempty"`
 }
 
 type DeviceGroups struct {
