@@ -10,6 +10,7 @@ import (
 )
 
 type DeviceGroup struct {
+	ID                   *int   `json:"id,omitempty"`
 	DomainID             int    `json:"domainId"`
 	Name                 string `json:"name"`
 	Description          string `json:"description,omitempty"`
