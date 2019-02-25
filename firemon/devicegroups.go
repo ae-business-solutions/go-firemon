@@ -74,7 +74,7 @@ func (c *Client) GetDeviceGroupDevices(devicegroupid int) ([]Device, error) {
 	page := 0
 	for {
 		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-		url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/devicegroup/%d/device?pageSize=100", c.BaseURL, c.Domain, devicegroupid, page)
+		url := fmt.Sprintf("https://%s/securitymanager/api/domain/%d/devicegroup/%d/device?pageSize=100", c.BaseURL, c.Domain, devicegroupid)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return nil, err
