@@ -15,7 +15,7 @@ type Device struct {
 	DomainID     int    `json:"domainId"`
 	Name         string `json:"name"`
 	ManagementIP string `json:"managementIp"`
-	Parents      *struct {
+	Parents      *[]struct {
 		ID           int    `json:"id"`
 		DomainID     int    `json:"domainId"`
 		Name         string `json:"name"`
