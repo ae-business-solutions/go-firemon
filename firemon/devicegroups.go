@@ -15,7 +15,7 @@ type DeviceGroup struct {
 	Name                 string `json:"name"`
 	Description          string `json:"description,omitempty"`
 	ParentID             *int   `json:"parentId,omitempty"`
-	SecurityConcernIndex *int   `json:"securityConcernIndex,omitempty"`
+	SecurityConcernIndex *float `json:"securityConcernIndex,omitempty"`
 	Analysis             bool   `json:"analysis"`
 	ChildDeviceGroups    *int   `json:"childDeviceGroups,omitempty"`
 	ChildDevices         *int   `json:"childDevices,omitempty"`
