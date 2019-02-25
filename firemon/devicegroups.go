@@ -175,7 +175,8 @@ func (c *Client) CreateDeviceGroup(name, description string) error {
 		return err
 	}
 	resp.Body.Close()
-	if 200 != resp.StatusCode {
+	// API returns 400 when Device Group already exists
+	if resp.StatusCode != 200 || resp.StatusCode != 400 {
 		return fmt.Errorf("Error (Status: %d), Body: %s", resp.StatusCode, body)
 	}
 	return nil
